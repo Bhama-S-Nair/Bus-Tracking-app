@@ -31,6 +31,7 @@ A Next.js web application to track and guide college buses in real-time using Go
 git clone https://github.com/yourusername/college-bus-tracker.git
 cd college-bus-tracker
 ```
+![image](https://github.com/user-attachments/assets/020d5b12-6554-4ab9-9054-9ee25e549a0d)
 
 ### 2. Install dependencies:
 ```bash
