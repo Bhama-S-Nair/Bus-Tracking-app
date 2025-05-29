@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>College Bus Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #000;
+    }
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 20px;
+      position: relative;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .active {
+      display: flex;
+      opacity: 1;
+      transform: scale(1);
+    }
+    .screen:not(.active) {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    .header {
+      background: linear-gradient(90deg, #4CAF50, #2196F3);
+      width: 100%;
+      text-align: center;
+      padding: 12px;
+      color: white;
+      font-size: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+    /* New big heading inside white box */
+    .main-heading {
+      font-size: 36px;
+      font-weight: 900;
+      color: #1CA9C9; /* Peacock blue */
+      margin-bottom: 25px;
+      text-align: center;
+      user-select: none;
+    }
+    .bus-button, .option-button {
+      margin: 10px 0;
+      padding: 15px 30px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: 0.2s;
+    }
+    .option-button {
+      background-color: #2196F3;
+    }
+    .bus-button:hover, .option-button:hover, .back-button:hover {
+      opacity: 0.85;
+      transform: scale(1.03);
+    }
+    .back-button {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      padding: 6px 12px;
+      font-size: 10px;
+      background-color: gray;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="bus-selection" class="screen active">
+    <h1 class="main-heading">BUS TRACKER</h1>
+    <h2 class="header">Select a Bus</h2>
+    <div id="bus-list"></div>
+  </div>
+
+  <div id="options-screen" class="screen">
+    <h2 id="bus-title" class="header"></h2>
+    <button class="option-button" onclick="guideBus()">Guide</button>
+    <button class="option-button" onclick="trackBus()">Track</button>
+    <button class="back-button" onclick="goBack()">Back</button>
+  </div>
+
+  <script>
+    const buses = ["Bus 1", "Bus 2", "Bus 3", "Bus 4", "Bus 5", "Bus 6", "Bus 7"];
+    const busLocations = {};
+    let selectedBusNumber = null;
+
+    const busListDiv = document.getElementById('bus-list');
+    const optionsScreen = document.getElementById('options-screen');
+    const busSelection = document.getElementById('bus-selection');
+    const busTitle = document.getElementById('bus-title');
+
+    buses.forEach((bus, index) => {
+      const button = document.createElement('button');
+      button.innerText = bus;
+      button.className = 'bus-button';
+      button.onclick = () => selectBus(index + 1);
+      busListDiv.appendChild(button);
+    });
+
+    function selectBus(busNumber) {
+      selectedBusNumber = busNumber;
+      busTitle.innerText = `Bus ${busNumber} Selected`;
+      busSelection.classList.remove('active');
+      optionsScreen.classList.add('active');
+    }
+
+    function goBack() {
+      selectedBusNumber = null;
+      optionsScreen.classList.remove('active');
+      busSelection.classList.add('active');
+    }
+
+    function guideBus() {
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition((position) => {
+          const { latitude, longitude } = position.coords;
+          busLocations[selectedBusNumber] = { latitude, longitude };
+          const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
+          window.open(url, '_blank');
+        }, (error) => {
+          alert("Error getting location: " + error.message);
+        });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+
+    function trackBus() {
+      const location = busLocations[selectedBusNumber];
+      if (location) {
+        const url = `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
+        window.open(url, '_blank');
+      } else {
+        alert("No one is guiding this bus. Can't track bus.");
+      }
+    }
+  </script>
+</body>
+</html>
